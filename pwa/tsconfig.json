@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es2017",
+    "noEmitHelpers": false,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "allowUnreachableCode": false,
+    "pretty": true,
+    "sourceMap": false
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

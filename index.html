@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="pwa/node_modules/foundation-sites/dist/css/foundation.min.css" rel="stylesheet">
+    <link href="pwa/src/style.css" rel="stylesheet">
+    <script type="module">
+        import { init } from './pwa/src/main.js'
+        init(window)
+    </script>
+</head>
+
+<body style="background: black url(pwa/assets/bg.png) no-repeat 0% 100%; background-size: cover">
+
+<div class="grid-y grid-frame grid-padding-x grid-padding-y">
+
+    <div class="cell shrink" style="background: rgba(63,64,72,0.85);">
+        <h3 style="color: #fff">Charging station</h3>
+    </div>
+
+    <div class="cell auto" style="background: rgba(245,222,179,0.91)">
+
+        <div class="grid-x grid-margin-x">
+
+            <div class="cell medium-4">
+                <p>Your balance: 312 kWh
+                <p><button class="button expanded large success">CHARGING 32%</button>
+            </div>
+        </div>
+    </div>
+    <div class="cell shrink">
+        <div class="cell medium-4 charging-controls">
+            <button class="button expanded large primary charging-controls__start">START</button>
+            <button class="button expanded large secondary charging-controls__stop">STOP</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

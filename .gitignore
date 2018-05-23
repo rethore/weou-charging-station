@@ -1,3 +1,4 @@
 node_modules/
 
 charging-station/**/*.js
+pwa/**/*.js
