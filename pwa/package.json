@@ -6,5 +6,8 @@
   "license": "ISC",
   "devDependencies": {
     "foundation-sites": "^6.4.4-rc1"
+  },
+  "dependencies": {
+    "lit-html": "^0.10.0"
   }
 }

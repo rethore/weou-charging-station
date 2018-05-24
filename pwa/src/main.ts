@@ -1,14 +1,7 @@
+import { init as statusInit } from './status.js'
 
-export function init(window:any) {
-
-  const document = window.document
-
-  document.querySelector('.charging-controls__start').addEventListener('click', () => doRequest('start'))
-  document.querySelector('.charging-controls__stop').addEventListener('click', () => {
-    console.debug("STOP hammertime")
-  })
-
-  poll(true)
+export function init() {
+  statusInit()
 }
 
 async function poll (loop:boolean) {
@@ -31,7 +24,7 @@ async function poll (loop:boolean) {
 
 const apiUrl = 'http://localhost:3000/'
 
-async function doRequest (method: "start"|"status") {
+export async function doRequest (method: "start"|"status") {
   const res = await fetch(apiUrl + method, {
     mode: 'cors',
     cache: 'no-cache',

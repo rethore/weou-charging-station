@@ -40,7 +40,7 @@ app.listen((process.env.PORT || 3000), () => {
   console.log("App listening on " + (process.env.PORT || 3000))
   if (process.argv[2] == 'test') {
     console.debug("Testing")
-    let r = request("http://localhost:3000/start")
+    let r = request("http://localhost:3000/status")
     r.end()
   }
 })
