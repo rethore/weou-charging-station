@@ -3,14 +3,16 @@ import { request } from "http"
 const rpcUrl = "http://localhost:8080/"
 
 export const responseMock = {
-  kW: 22,
   chargingId: "s0idfj0asjdf0asn",
+  kW: 22,
   kWhTotal: 42000,
-  co2: 34,
-  price: 104,
-  balance: -1,
   charging: false,
   connected: true,
+
+  co2: 34,
+  price: 104,
+
+  balance: -1,
 }
 
 function doRequest (method:"start"|"stop"|"status") {
