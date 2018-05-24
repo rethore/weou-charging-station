@@ -12,7 +12,7 @@ async function poll(loop) {
         console.error("Stopped polling");
     }
     if (json) {
-        update(json);
+        update(json); // 123123
     }
     if (loop) {
         setTimeout(() => poll(loop), delay);
