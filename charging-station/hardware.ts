@@ -8,12 +8,12 @@ export const responseMock = {
   kWhTotal: 42000,
   co2: 34,
   price: 104,
-  balance: 0,
+  balance: -1,
   charging: false,
-  connected: false,
+  connected: true,
 }
 
-function doRequest (method:string) {
+function doRequest (method:"start"|"stop"|"status") {
   return new Promise((resolve, reject) => {
     let r = request(rpcUrl + method, res => {
       if (res.statusCode < 300 && res.statusCode >= 200) {
@@ -37,19 +37,32 @@ export async function pollStatus() {
   // }
 
   responseMock.kWhTotal = new Date().getTime() / 10000000
-  if (Math.random() > 0.68) {
-    responseMock.charging = !responseMock.charging
-    responseMock.connected = responseMock.charging
-  }
+  // if (Math.random() > 0.68) {//
+  //   responseMock.charging = !responseMock.charging
+  //   responseMock.connected = responseMock.charging
+  // }
   return responseMock
 }
 
 export async function startCharge () {
-  const res = await doRequest('start')
+  try {
+    const res = await doRequest('start')
+  }
+  catch (e) {
 
+  }
+  responseMock.connected =
+    responseMock.charging = true
 }
 
-export function stopCharge () {
+export async function stopCharge () {
+  try {
+    const res = await doRequest('stop')
+  }
+  catch (e) {
 
+  }
 
+  responseMock.connected = true
+  responseMock.charging = false
 }
