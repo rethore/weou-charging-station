@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "lit-html": "^0.10.0"
+  },
+  "scripts": {
+    "build": "git add src/**.js -f && git commit -m build && git push"
   }
 }
