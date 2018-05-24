@@ -1,7 +1,8 @@
 import * as Koa from 'koa'
-import { request } from 'http'
 import { Context } from 'koa'
+import { request } from 'http'
 import { start } from 'repl'
+import { pollStatus } from './hardware.js'
 
 const app = new Koa()
 
@@ -15,11 +16,11 @@ routes.set('/start', async (ctx:Context) => {
   ctx.body = {
     message: "ok"
   }
-  ctx.toJSON()
 })
 
 routes.set('/status', async (ctx:Context) => {
-  console.debug('Status')
+  const response = await pollStatus()
+  ctx.body = response
 })
 
 const router = (ctx:Context) => {
@@ -27,6 +28,9 @@ const router = (ctx:Context) => {
   const fn = routes.get(ctx.request.path)
   if (fn) {
     fn(ctx)
+  }
+  else {
+    console.debug("Didn't find handler for route: " + ctx.request.path)
   }
 }
 
