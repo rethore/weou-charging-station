@@ -42,7 +42,7 @@ export function httpRequest (urlString:string, opts?:RequestOptions):Promise<Par
   })
 }
 
-export type Response = {
+type Response = {
   body: any,
   error: Error,
   json: any,
