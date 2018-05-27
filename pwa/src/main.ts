@@ -6,8 +6,8 @@ export function init() {
 
 const apiUrl = 'http://localhost:3000/'
 
-export async function doRequest (method: "start"|"status"|"stop", id:string) {
-  const res = await fetch(apiUrl + method + `?id=${id}`, {
+export async function doRequest (method: "start"|"status"|"stop", id:string, returnFunds?:string) {
+  const res = await fetch(apiUrl + method + `?id=${id}&return=${returnFunds}`, {
     mode: 'cors',
     cache: 'no-cache',
   })
