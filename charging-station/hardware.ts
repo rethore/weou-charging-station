@@ -1,13 +1,6 @@
 import { httpRequest } from './http-request.js'
 
-export const responseMock :chargingState = {
-  chargingId: "s0idfj0asjdf0asn",
-  kW: 22,
-  kWhTotal: 42000,
-  charging: false,
-  connected: true,
-}
-type chargingState = {
+type ChargingState = {
   chargingId: string,
   kW: number,
   kWhTotal: number,
@@ -23,26 +16,32 @@ export class ChargingStation {
     this.id = id
   }
 
-  async status():Promise<chargingState> {
-    let res
+  async status():Promise<ChargingState> {
+    let res:ChargingState
     try {
       const result = await httpRequest(`${this.baseUrl}status/?id=${this.id}`)
       res = result.json
     }
     catch (e) {
+      console.log(e)
     }
-    res = responseMock
-    res.kWhTotal = new Date().getTime() / 10000000
+    // mock
+    res = <ChargingState>{
+      kWhTotal: new Date().getTime(),
+      kW: 7.7,
+      charging: true,
+      connected: true,
+    }
     return res
   }
 
-  async startCharge (budget:number) {
+  async startCharge (budget:number):Promise<number> {
     await httpRequest(`${this.baseUrl}start/?id=${this.id}`)
 
     const t0 = new Date()
     const maxChargeCycle = 1 // seconds
     let chargeCycle:number = maxChargeCycle
-    let status:chargingState
+    let status:ChargingState
 
     do {
       try {
@@ -60,7 +59,7 @@ export class ChargingStation {
       if (status.charging) {
         // find time
         const t1 = new Date()
-        const elapsedTime_s = t1.getTime() - t0.getTime()
+        const elapsedTime_s = (t1.getTime() - t0.getTime()) / 1000
         const cents_s = wattage * price // 0.0077 Mj/s * 55.5556 cents / Mj = 4.2 cents/s
         const subtract = elapsedTime_s * cents_s // s - cents / s
         budget -= subtract // cents
@@ -73,6 +72,8 @@ export class ChargingStation {
     while (chargeCycle > 0)
 
     await this.stopCharge()
+
+    return budget
   }
 
   async stopCharge () {
@@ -80,10 +81,8 @@ export class ChargingStation {
       await httpRequest(`${this.baseUrl}stop/?id=${this.id}`)
     }
     catch (e) {
-
+      console.error(e)
     }
-    responseMock.connected = true
-    responseMock.charging = false
   }
 }
 
