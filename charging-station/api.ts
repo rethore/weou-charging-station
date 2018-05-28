@@ -2,7 +2,7 @@ import * as Koa from 'koa'
 import { Context } from 'koa'
 import { ChargingStation } from './hardware.js'
 import { getBalanceOf, transferFrom } from './eth.js'
-
+const cors = require('koa-cors')
 const app = new Koa()
 
 const routes = new Map<string, Function>()
@@ -17,6 +17,12 @@ const router = async (ctx:Context) => {
     console.log("Didn't find handler for route: " + ctx.request.path)
   }
 }
+
+app.use( cors({
+  origin: "*",
+  methods: ['GET'],
+  headers: ['Content-Type'],
+}))
 
 app.use( router)
 

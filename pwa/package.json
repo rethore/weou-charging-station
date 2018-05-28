@@ -5,10 +5,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "foundation-sites": "^6.4.4-rc1",
-    "typescript": "^2.8.3"
   },
   "dependencies": {
+    "foundation-sites": "^6.4.4-rc1",
     "lit-html": "^0.10.0"
   },
   "scripts": {
