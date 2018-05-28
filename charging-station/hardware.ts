@@ -1,5 +1,5 @@
 import { httpRequest, ParsedIncomingMessage } from './http-request.js'
-import { getValueFieldAsNumber } from './xml-parsing.js'
+import { getValueFieldAsNumber, getValueFieldAsString } from './xml-parsing.js'
 
 type ChargingState = {
   chargingId: string,
@@ -11,27 +11,29 @@ type ChargingState = {
 
 export class ChargingStation {
   private readonly id:string
-  private baseUrl = `http://localhost:8080/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
+  private baseUrl:string = `http://localhost:8888/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
 
   constructor(id: string) {
     this.id = id
   }
 
   async status():Promise<ChargingState> {
-
     const results:ParsedIncomingMessage[] = await Promise.all([
       httpRequest(`${this.baseUrl}/getActiveEnergyImport`),
       httpRequest(`${this.baseUrl}/getACActivePower`),
       httpRequest(`${this.baseUrl}/getCurrentLimit`),
+
       httpRequest(`${this.baseUrl}/getAuthenticatedVehicle`),
     ])
 
-    const [kWhTotal, kW] = results.map(response => getValueFieldAsNumber(response.body))
+    const [kWhTotal, kW, limit] = results.map(response => getValueFieldAsNumber(response.body))
+    const chargingId = getValueFieldAsString(results[3].body)
 
     const result = <ChargingState>{
-      chargingId: '123',
+      chargingId,
       kWhTotal,
       kW,
+      limit,
       charging: kW > 0,
       connected: kW > 0,
     }
@@ -40,7 +42,11 @@ export class ChargingStation {
   }
 
   async startCharge (budget:number):Promise<number> {
-    await httpRequest(`${this.baseUrl}start/?id=${this.id}`)
+    const amps = 32
+
+    await httpRequest(`${this.baseUrl}setCurrentLimit/${amps}`, {
+      method: 'PUT'
+    })
 
     const t0 = new Date()
     const maxChargeCycle = 1 // seconds
@@ -82,7 +88,9 @@ export class ChargingStation {
 
   async stopCharge () {
     try {
-      await httpRequest(`${this.baseUrl}stop/?id=${this.id}`)
+      await httpRequest(`${this.baseUrl}setCurrentLimit/0`, {
+        method: 'PUT'
+      })
     }
     catch (e) {
       console.error(e)

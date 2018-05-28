@@ -1,12 +1,11 @@
 import * as Koa from 'koa'
 import { Context } from 'koa'
-const cors = require('koa-cors')
 const app = new Koa()
 
 const routes = new Map<string, Function>()
 
 const router = async (ctx:Context) => {
-  console.debug(ctx.method, ctx.request.path, ctx.request.originalUrl)
+  console.debug(ctx.method, ctx.request.path)
   const fn = routes.get(ctx.request.path)
   if (fn) {
     await fn(ctx)
@@ -16,40 +15,34 @@ const router = async (ctx:Context) => {
   }
 }
 
-app.use( cors({
-  origin: "*",
-  methods: ['GET'],
-  headers: ['Content-Type'],
-}))
-
 app.use( router)
 
-app.listen((process.env.PORT || 8080), async () => {
-  console.log("App listening on " + (process.env.PORT || 8080))
+app.listen((process.env.PORT || 8888), () => {
+  console.log("App listening on " + (process.env.PORT || 8888))
 })
 
 const base = `/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
 
 routes.set(`${base}/getActiveEnergyImport`, (ctx:Context) => {
-  ctx.headers['content-type'] = "application/xml"
+  ctx.headers['Content-Type'] = "application/xml"
   ctx.response.body = `
     <?xml version="1.0" encoding="UTF-8" standalone="yes"?><compositeMeasurement><timestampMicros>1527503513539000</timestampMicros><timePrecision>1983</timePrecision><quality>0</quality><validity>0</validity><source>0</source><value>5.9</value></compositeMeasurement>
   `
 })
 routes.set(`${base}/getCurrentLimit`, (ctx:Context) => {
-  ctx.headers['content-type'] = "application/xml"
+  ctx.headers['Content-Type'] = "application/xml"
   ctx.response.body = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><compositeMeasurement><timestampMicros>1527503668224000</timestampMicros><timePrecision>1983</timePrecision><quality>0</quality><validity>0</validity><source>0</source><value>32.0</value></compositeMeasurement>
   `
 })
 routes.set(`${base}/getACActivePower`, (ctx:Context) => {
-  ctx.headers['content-type'] = "application/xml"
+  ctx.headers['Content-Type'] = "application/xml"
   ctx.response.body = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><compositeMeasurement><timestampMicros>1527504241409000</timestampMicros><timePrecision>1983</timePrecision><quality>0</quality><validity>0</validity><source>0</source><value>0.0</value></compositeMeasurement>
   `
 })
 routes.set(`${base}/getAuthenticatedVehicle`, (ctx:Context) => {
-  ctx.headers['content-type'] = "application/xml"
+  ctx.headers['Content-Type'] = "application/xml"
   ctx.response.body = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><compositeLong><timestampMicros>0</timestampMicros><timePrecision>16</timePrecision><quality>0</quality><validity>2</validity><source>2</source><value>-9223372036854775808</value></compositeLong>
   `

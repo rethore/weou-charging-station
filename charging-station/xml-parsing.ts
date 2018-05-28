@@ -36,7 +36,6 @@ export function getValueFieldAsNumber(xml:string):number {
     xmlMode: true
   })
   const value:string = $('compositeMeasurement value').text()
-  console.debug('found', $('compositeMeasurement value').text())
   return parseFloat(value)
 }
 
@@ -44,6 +43,6 @@ export function getValueFieldAsString(xml:string):string {
   const $ = cheerio.load(xml, {
     xmlMode: true
   })
-  const value:string = $('compositeMeasurement value').text()
+  const value:string = $('compositeLong value').text()
   return value
 }
