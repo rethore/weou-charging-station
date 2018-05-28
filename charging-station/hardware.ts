@@ -1,4 +1,5 @@
-import { httpRequest } from './http-request.js'
+import { httpRequest, ParsedIncomingMessage } from './http-request.js'
+import { getValueFieldAsNumber } from './xml-parsing.js'
 
 type ChargingState = {
   chargingId: string,
@@ -10,29 +11,32 @@ type ChargingState = {
 
 export class ChargingStation {
   private readonly id:string
-  private baseUrl = "http://localhost:8080/"
+  private baseUrl = `http://localhost:8080/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
 
   constructor(id: string) {
     this.id = id
   }
 
   async status():Promise<ChargingState> {
-    let res:ChargingState
-    try {
-      const result = await httpRequest(`${this.baseUrl}status/?id=${this.id}`)
-      res = result.json
+
+    const results:ParsedIncomingMessage[] = await Promise.all([
+      httpRequest(`${this.baseUrl}/getActiveEnergyImport`),
+      httpRequest(`${this.baseUrl}/getACActivePower`),
+      httpRequest(`${this.baseUrl}/getCurrentLimit`),
+      httpRequest(`${this.baseUrl}/getAuthenticatedVehicle`),
+    ])
+
+    const [kWhTotal, kW] = results.map(response => getValueFieldAsNumber(response.body))
+
+    const result = <ChargingState>{
+      chargingId: '123',
+      kWhTotal,
+      kW,
+      charging: kW > 0,
+      connected: kW > 0,
     }
-    catch (e) {
-      console.log(e)
-    }
-    // mock
-    res = <ChargingState>{
-      kWhTotal: new Date().getTime(),
-      kW: 7.7,
-      charging: true,
-      connected: true,
-    }
-    return res
+
+    return result
   }
 
   async startCharge (budget:number):Promise<number> {

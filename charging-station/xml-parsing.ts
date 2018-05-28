@@ -31,16 +31,19 @@ Otherwise validity is 0 and the value is positve.
 
 import * as cheerio from 'cheerio'
 
-const $ = cheerio.load(`
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <compositeMeasurement>
-  <timestampMicros>1527503668224000</timestampMicros>
-  <timePrecision>1983</timePrecision>
-  <quality>0</quality><validity>0</validity><source>0</source><value>32.0</value>
-  </compositeMeasurement>
-`
-  , {
+export function getValueFieldAsNumber(xml:string):number {
+  const $ = cheerio.load(xml, {
     xmlMode: true
   })
+  const value:string = $('compositeMeasurement value').text()
+  console.debug('found', $('compositeMeasurement value').text())
+  return parseFloat(value)
+}
 
-console.debug($('compositeMeasurement timestampMicros').text())
+export function getValueFieldAsString(xml:string):string {
+  const $ = cheerio.load(xml, {
+    xmlMode: true
+  })
+  const value:string = $('compositeMeasurement value').text()
+  return value
+}
