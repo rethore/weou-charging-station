@@ -5,7 +5,7 @@
     "target": "es6",
     "noEmitHelpers": false,
     "noEmitOnError": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "alwaysStrict": true,
     "allowUnreachableCode": false,
     "pretty": true,
