@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node api.js"
+    "start": "node api.js",
+    "develop": "nodemon api.js --delay 300ms -- test"
   },
   "author": "",
   "license": "ISC",
