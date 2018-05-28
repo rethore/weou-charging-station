@@ -9,7 +9,10 @@ RUN npm install --only=production
 
 RUN mkdir /app
 WORKDIR /app
-COPY . ./
+
+# copy js and json files - no typescript
+COPY *.js ./
+COPY *.json ./
 
 EXPOSE 3000
 CMD npm start
