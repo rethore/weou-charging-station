@@ -12,6 +12,7 @@
     "lit-html": "^0.10.0"
   },
   "scripts": {
-    "build": "tsc && git add src/**.js -f && git commit -m build && git push"
+    "build": "tsc && git add src/**.js -f && git commit -m build && git push",
+    "start": "http-server ../ -c-1 -o --cors"
   }
 }
