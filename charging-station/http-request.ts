@@ -1,43 +1,40 @@
 import { IncomingMessage, request, RequestOptions } from 'http'
 import { URL } from 'url'
 
-export function httpRequest (urlString:string, opts?:RequestOptions):Promise<ParsedIncomingMessage> {
+export function httpRequest (urlString:string, opts:RequestOptions = {}):Promise<ParsedIncomingMessage> {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(urlString)
     let data:string = ''
-    let res:IncomingMessage
-    let req = request(<URL & RequestOptions>{
-      ...urlObj,
-      ...opts,
-    }, _res => res = _res)
-
-    req.setTimeout(5000)
-    req.on('data', chunk => data += chunk.toString())
-    req.on('error', err => reject(err))
-    req.on('end', () => {
-      let json:object
-      let error:Error
-
-      if (/^application\/json/.test(res.headers['content-type'])) {
-        try {
-          json = JSON.parse(data)
-        }
-        catch (e) {
-          console.log(e)
-          error = new Error(e.toString())
-        }
-      }
-
+    if (opts.method) {
+      (urlObj as any).method = opts.method
+    }
+    let req = request(urlObj, res => {
       const result = <ParsedIncomingMessage>{
-        error,
-        json,
-        body: data,
         statusCode: res.statusCode,
         headers: res.headers,
       }
-      resolve(result)
+      res.setEncoding('utf8')
+      res.on('data', chunk => data += chunk.toString())
+      res.on('end', () => {
+        if (/^application\/json/.test(res.headers['content-type'])) {
+          try {
+            result.json = JSON.parse(data)
+          }
+          catch (e) {
+            result.error = new Error(e.toString())
+          }
+        }
+        result.body = data
+        if (result.error) {
+          reject(result)
+        }
+        else {
+          resolve(result)
+        }
+      })
     })
-
+    req.on('error', err => reject(err))
+    req.setTimeout( (opts.timeout) ? opts.timeout : 5000)
     req.end() // send it off!
   })
 }
