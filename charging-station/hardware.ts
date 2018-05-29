@@ -1,5 +1,6 @@
 import { httpRequest, ParsedIncomingMessage } from './http-request.js'
 import { getValueFieldAsNumber, getValueFieldAsString } from './xml-parsing.js'
+import { URL } from 'url'
 
 type ChargingState = {
   chargingId: string,
@@ -10,11 +11,13 @@ type ChargingState = {
 }
 
 export class ChargingStation {
-  private readonly id:string
-  private baseUrl:string = `http://localhost:8888/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
+  readonly id:string
+  readonly baseUrl:string
 
-  constructor(id: string) {
+  constructor(id: string, baseUrl:string) {
     this.id = id
+    let url = new URL(baseUrl)
+    this.baseUrl = `${url}/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
   }
 
   async status():Promise<ChargingState> {
@@ -88,7 +91,7 @@ export class ChargingStation {
 
   async stopCharge () {
     try {
-      await httpRequest(`${this.baseUrl}setCurrentLimit/0`, {
+      await httpRequest(`${this.baseUrl}setCurrentLimit/6`, {
         method: 'PUT'
       })
     }
