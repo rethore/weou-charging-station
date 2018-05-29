@@ -24,12 +24,17 @@ async function poll (loop:boolean) {
 }
 
 export function init() {
-  let q = location.search
-  q = q.substr( q.indexOf("id=")+3 )
 
-  const input:HTMLInputElement = document.querySelector('input')
-  input.value = q
+  const id = getQueryVariable('id')
+  if (id) {
+    document.querySelector('[name="charging-station-id"').setAttribute('value', id)
+  }
+  const url = getQueryVariable('url')
+  if (url) {
+    document.querySelector('[name="charging-station-url"').setAttribute('value', url)
+  }
 
+  // initial render
   update({
     co2: -1,
     price: -1,
@@ -38,6 +43,17 @@ export function init() {
     connected: false,
   })
   poll(true)
+}
+
+export function getQueryVariable(variable:string):string|undefined {
+  const query = window.location.search.substring(1)
+  let vars = query.split('&')
+  for (let i = 0; i < vars.length; i++) {
+    const pair = vars[i].split('=')
+    if (decodeURIComponent(pair[0]) == variable) {
+      return decodeURIComponent(pair[1])
+    }
+  }
 }
 
 function update (state:State) {
