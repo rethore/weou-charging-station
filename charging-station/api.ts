@@ -3,6 +3,7 @@ import { Context } from 'koa'
 import { ChargingStation } from './hardware.js'
 import { getBalanceOf, transferFrom } from './eth.js'
 import { httpRequest } from './http-request.js'
+import { URL } from 'url'
 const cors = require('koa-cors')
 const app = new Koa()
 
@@ -31,7 +32,7 @@ app.listen((process.env.PORT || 3000),  async() => {
   console.log("App listening on " + (process.env.PORT || 3000))
   if (process.argv[2] == 'test') {
     try {
-      const result = await httpRequest(`http://localhost:3000/status?id=` + '0x51f8a5d539582eb9bf2f71f66bcc0e6b37abb7ca')
+      const result = await httpRequest(`http://localhost:3000/status?id=` + '0x51f8a5d539582eb9bf2f71f66bcc0e6b37abb7ca&url=http://localhost:8888')
       console.log(result.statusCode, result.json || result.body)
     }
     catch (e) {
@@ -44,8 +45,9 @@ routes.set('/start', async (ctx:Context) => {
   const chargingStagingAddress:string = ctx.request.query.id
   const returnFundsAddress:string = ctx.request.query.return
   console.assert(!!chargingStagingAddress, `missing query parameter 'id'`)
+  const baseUrl = new URL(ctx.request.query.url)
 
-  const station = new ChargingStation(chargingStagingAddress)
+  const station = new ChargingStation(chargingStagingAddress, baseUrl.toString())
   const budget = await getBalanceOf(chargingStagingAddress)
   station.startCharge(budget) // dont await this, it will run for hours
     .then(() => {
@@ -58,16 +60,18 @@ routes.set('/start', async (ctx:Context) => {
 routes.set('/stop', async (ctx:Context) => {
   const id = ctx.request.query.id
   console.assert(!!id, `missing query parameter 'id'`)
-
-  const station = new ChargingStation(id)
+  const baseUrl = new URL(ctx.request.query.url) // no need: a?.b?.c
+  const station = new ChargingStation(id, baseUrl.toString())
   await station.stopCharge()
 })
 
 routes.set('/status', async (ctx:Context) => {
   const id = ctx.request.query.id
+  const baseUrl = new URL(ctx.request.query.url)
+
   console.assert(!!id, `missing query parameter 'id'`)
 
-  const station:ChargingStation = new ChargingStation(id)
+  const station:ChargingStation = new ChargingStation(id, baseUrl.toString())
   const response = await station.status()
 
   const balance = Math.round( Math.random() * 10000) //await getBalanceOf(ctx.request.query.id)

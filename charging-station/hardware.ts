@@ -16,8 +16,9 @@ export class ChargingStation {
 
   constructor(id: string, baseUrl:string) {
     this.id = id
-    let url = new URL(baseUrl)
-    this.baseUrl = `${url}/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
+    const url = new URL(baseUrl)
+    url.pathname = `/typebased_WS_EVSE/EVSEWebService/Toppen_EVSE`
+    this.baseUrl = url.toString()
   }
 
   async status():Promise<ChargingState> {
@@ -47,7 +48,9 @@ export class ChargingStation {
   async startCharge (budget:number):Promise<number> {
     const amps = 32
 
-    await httpRequest(`${this.baseUrl}setCurrentLimit/${amps}`, {
+    const url = new URL(this.baseUrl)
+    url.pathname += `setCurrentLimit/${amps}`
+    await httpRequest(url.toString(), {
       method: 'PUT'
     })
 
@@ -91,7 +94,9 @@ export class ChargingStation {
 
   async stopCharge () {
     try {
-      await httpRequest(`${this.baseUrl}setCurrentLimit/6`, {
+      const url = new URL(this.baseUrl)
+      url.pathname += `setCurrentLimit/6`
+      await httpRequest(url.toString(), {
         method: 'PUT'
       })
     }
